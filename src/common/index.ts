@@ -41,7 +41,7 @@ export interface Query extends Dto {
   query: string;
 }
 
-export class DiagramWriter {
+export class StringWriter {
   private res = '';
   private indent = 0;
 
@@ -70,9 +70,13 @@ export class DiagramWriter {
   }
 }
 
-export class SequenceDiagramRenderer {
+export interface DiagramRenderer<T> {
+  render(diagram: T): string;
+}
+
+export class UseCaseDiagramRenderer implements DiagramRenderer<UseCaseDiagram> {
   render(diagram: UseCaseDiagram): string {
-    const writer = new DiagramWriter();
+    const writer = new StringWriter();
 
     writer.appendLine('sequenceDiagram');
     writer.increaseIndent();
