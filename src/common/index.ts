@@ -14,31 +14,36 @@ export interface UseCaseDiagramParticipant {
 export interface UseCaseDiagramStep {
   id: string;
   name?: string;
+  note?: string;
 }
 
 export type UseCaseDiagramMessageArrowType = 'solid_arrow' | 'dashed_arrow';
 
-export interface UseCaseDiagramMessage<T extends Model>
-  extends UseCaseDiagramStep {
+export interface UseCaseDiagramMessage<T> extends UseCaseDiagramStep {
   from: UseCaseDiagramParticipant;
   to: UseCaseDiagramParticipant;
   arrow: UseCaseDiagramMessageArrowType;
   data?: T;
 }
 
-export interface Model {
-  _model: {
-    type: string;
-    name: string;
-    description?: string;
-    sample: string | string[];
-  };
-}
+export class StringTo {
+  static functionName(text: string) {
+    return text
+      .replace(/-|_/g, ' ')
+      .replace(/(?:^\w|[A-Z]|\b\w|\s+)/g, function (match, index) {
+        if (+match === 0) return '';
+        return index === 0 ? match.toLowerCase() : match.toUpperCase();
+      });
+  }
 
-export interface Dto extends Model {}
-
-export interface Query extends Dto {
-  query: string;
+  static className(text: string) {
+    return text
+      .replace(/-|_/g, ' ')
+      .replace(/(?:^\w|[A-Z]|\b\w|\s+)/g, function (match, index) {
+        if (+match === 0) return '';
+        return match.toUpperCase();
+      });
+  }
 }
 
 export class StringWriter {
@@ -63,6 +68,14 @@ export class StringWriter {
 
   appendLine(text: string = '') {
     this.append(`${text}\n`);
+  }
+
+  appendBlock(start: string, end: string, body: () => void) {
+    this.appendLine(start);
+    this.increaseIndent();
+    body();
+    this.decreaseIndent();
+    this.appendLine(end);
   }
 
   getText(): string {
@@ -106,17 +119,54 @@ export class UseCaseDiagramTestGenerator
   generate(diagram: UseCaseDiagram): string {
     const writer = new StringWriter();
 
-    writer.appendLine(`describe('${diagram.id}', () => {`);
-    writer.appendLine();
-    writer.increaseIndent();
-
-    diagram.steps.forEach((step) => {
-      writer.appendLine(`it('should ${step.name}', () => {});`);
-      writer.appendLine();
+    writer.appendBlock('const steps = {', '};', () => {
+      diagram.steps.forEach((step) => {
+        writer.appendLine(
+          `${StringTo.functionName(step.id)}: ${JSON.stringify(step)},`
+        );
+      });
     });
 
-    writer.decreaseIndent();
-    writer.appendLine('});');
+    writer.appendLine();
+    writer.appendBlock(
+      `abstract class ${StringTo.className(diagram.id)}Tests {`,
+      `}`,
+      () => {
+        writer.appendLine();
+        writer.appendBlock('run() {', '}', () => {
+          writer.appendBlock(`describe('${diagram.id}', () => {`, '});', () => {
+            diagram.steps.forEach((step) => {
+              writer.appendLine();
+              writer.appendBlock(
+                `it('should ${step.id}', () => {`,
+                `});`,
+                () => {
+                  writer.appendLine(
+                    `this.${StringTo.functionName(
+                      step.id
+                    )}(steps.${StringTo.functionName(step.id)});`
+                  );
+                }
+              );
+            });
+          });
+        });
+
+        diagram.steps.forEach((step) => {
+          writer.appendLine();
+          if (step.note) {
+            writer.appendLine('/*');
+            writer.appendLine(`* ${step.note}`);
+            writer.appendLine('*/');
+          }
+          writer.appendLine(
+            `abstract ${StringTo.functionName(
+              step.id
+            )}(data: typeof steps.${StringTo.functionName(step.id)}): void;`
+          );
+        });
+      }
+    );
 
     return writer.getText();
   }

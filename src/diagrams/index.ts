@@ -35,24 +35,43 @@ export const customersGetAllHappyDiagram: UseCaseDiagram = {
       from: viewer,
       to: frontend,
       arrow: 'solid_arrow',
-      data: { query: '?name=startsWith:martin' },
+      data: null,
     },
 
     {
       id: 'display-customers-view',
       name: 'Display customers view',
+      note: 'Should display table with loading indicator.',
       from: frontend,
       to: viewer,
       arrow: 'dashed_arrow',
     },
 
     {
-      id: 'visit-customers-view',
-      name: 'Visit "/customers"',
+      id: 'get-all-customers--initial',
+      name: 'Get all customers',
       from: frontend,
-      to: api,
+      to: server,
       arrow: 'solid_arrow',
       data: { query: '?name=startsWith:martin' },
+    },
+
+    {
+      id: 'return-all-customers--initial',
+      name: 'Return all customers',
+      from: server,
+      to: frontend,
+      arrow: 'dashed_arrow',
+      data: [{ name: 'Customer 1' }, { name: 'Customer 2' }],
+    },
+
+    {
+      id: 'display-customers-list--initial',
+      name: 'Display all customers',
+      from: frontend,
+      to: viewer,
+      arrow: 'dashed_arrow',
+      data: null,
     },
   ],
 };
