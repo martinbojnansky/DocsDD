@@ -42,7 +42,7 @@ export interface Query extends Dto {
 }
 
 export class StringWriter {
-  private res = '';
+  private text = '';
   private indent = 0;
 
   increaseIndent(times: number = 1) {
@@ -56,26 +56,28 @@ export class StringWriter {
 
   append(text: string) {
     for (let i = 0; i < this.indent; i++) {
-      this.res += ' ';
+      this.text += ' ';
     }
-    this.res += text;
+    this.text += text;
   }
 
-  appendLine(text: string) {
+  appendLine(text: string = '') {
     this.append(`${text}\n`);
   }
 
-  getResult(): string {
-    return this.res;
+  getText(): string {
+    return this.text;
   }
 }
 
-export interface DiagramRenderer<T> {
-  render(diagram: T): string;
+export interface DiagramGenerator<T> {
+  generate(diagram: T): string;
 }
 
-export class UseCaseDiagramRenderer implements DiagramRenderer<UseCaseDiagram> {
-  render(diagram: UseCaseDiagram): string {
+export class UseCaseDiagramGenerator
+  implements DiagramGenerator<UseCaseDiagram>
+{
+  generate(diagram: UseCaseDiagram): string {
     const writer = new StringWriter();
 
     writer.appendLine('sequenceDiagram');
@@ -85,7 +87,7 @@ export class UseCaseDiagramRenderer implements DiagramRenderer<UseCaseDiagram> {
       writer.appendLine(`participant ${participant.name}`);
     });
 
-    writer.appendLine('');
+    writer.appendLine();
 
     diagram.steps.forEach((step) => {
       const arrow = step.arrow === 'solid_arrow' ? '->>' : '-->>';
@@ -94,6 +96,28 @@ export class UseCaseDiagramRenderer implements DiagramRenderer<UseCaseDiagram> {
       );
     });
 
-    return writer.getResult();
+    return writer.getText();
+  }
+}
+
+export class UseCaseDiagramTestGenerator
+  implements DiagramGenerator<UseCaseDiagram>
+{
+  generate(diagram: UseCaseDiagram): string {
+    const writer = new StringWriter();
+
+    writer.appendLine(`describe('${diagram.id}', () => {`);
+    writer.appendLine();
+    writer.increaseIndent();
+
+    diagram.steps.forEach((step) => {
+      writer.appendLine(`it('should ${step.name}', () => {});`);
+      writer.appendLine();
+    });
+
+    writer.decreaseIndent();
+    writer.appendLine('});');
+
+    return writer.getText();
   }
 }
