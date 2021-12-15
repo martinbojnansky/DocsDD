@@ -1,29 +1,26 @@
 export interface UseCaseDiagram {
   id: string;
-  name: string;
   participants: UseCaseDiagramParticipant[];
-  steps: UseCaseDiagramMessage<any>[]; // UseCaseDiagramStep[];
+  steps: UseCaseDiagramStep<any>[]; // UseCaseDiagramStep[];
 }
 
 export interface UseCaseDiagramParticipant {
   id: string;
-  name: string;
-  note?: string;
-}
-
-export interface UseCaseDiagramStep {
-  id: string;
-  name?: string;
-  note?: string;
 }
 
 export type UseCaseDiagramMessageArrowType = 'solid_arrow' | 'dashed_arrow';
 
-export interface UseCaseDiagramMessage<T> extends UseCaseDiagramStep {
+export interface UseCaseDiagramStep<T> {
+  id: string;
   from: UseCaseDiagramParticipant;
   to: UseCaseDiagramParticipant;
   arrow: UseCaseDiagramMessageArrowType;
-  data?: T;
+  dto: T;
+}
+
+export interface Dto<T> {
+  name: string;
+  value: T;
 }
 
 export class StringTo {
@@ -97,16 +94,14 @@ export class UseCaseDiagramGenerator
     writer.increaseIndent();
 
     diagram.participants.forEach((participant) => {
-      writer.appendLine(`participant ${participant.name}`);
+      writer.appendLine(`participant ${participant.id}`);
     });
 
     writer.appendLine();
 
     diagram.steps.forEach((step) => {
       const arrow = step.arrow === 'solid_arrow' ? '->>' : '-->>';
-      writer.appendLine(
-        `${step.from.name}${arrow}${step.to.name}: ${step.name}`
-      );
+      writer.appendLine(`${step.from.id}${arrow}${step.to.id}: ${step.id}`);
     });
 
     return writer.getText();
@@ -119,32 +114,67 @@ export class UseCaseDiagramTestGenerator
   generate(diagram: UseCaseDiagram): string {
     const writer = new StringWriter();
 
-    writer.appendBlock('const steps = {', '};', () => {
-      diagram.steps.forEach((step) => {
-        writer.appendLine(
-          `${StringTo.functionName(step.id)}: ${JSON.stringify(step)},`
-        );
-      });
-    });
-
+    this.generateStepConstants(diagram, writer);
     writer.appendLine();
+    this.generateStepTypes(diagram, writer);
+    writer.appendLine();
+    this.generateDtos(diagram, writer);
+    writer.appendLine();
+    this.generateTestClass(diagram, writer);
+
+    return writer.getText();
+  }
+
+  protected generateStepConstants(
+    diagram: UseCaseDiagram,
+    writer: StringWriter
+  ) {
+    diagram.steps.forEach((step) => {
+      writer.appendLine(
+        `export const ${StringTo.functionName(step.id)}Step = ${JSON.stringify(
+          step
+        )};`
+      );
+    });
+  }
+
+  protected generateStepTypes(diagram: UseCaseDiagram, writer: StringWriter) {
+    diagram.steps.forEach((step) => {
+      writer.appendLine(
+        `export type ${StringTo.className(
+          step.id
+        )}StepType = typeof ${StringTo.functionName(step.id)}Step;`
+      );
+    });
+  }
+
+  protected generateDtos(diagram: UseCaseDiagram, writer: StringWriter) {
+    diagram.steps.forEach((step) => {
+      writer.appendLine(
+        `export type ${StringTo.className(
+          step.id
+        )}Dto = typeof ${StringTo.functionName(step.id)}Step.dto;`
+      );
+    });
+  }
+
+  protected generateTestClass(diagram: UseCaseDiagram, writer: StringWriter) {
     writer.appendBlock(
-      `abstract class ${StringTo.className(diagram.id)}Tests {`,
+      `export abstract class ${StringTo.className(diagram.id)}Tests {`,
       `}`,
       () => {
-        writer.appendLine();
+        // Run-method
         writer.appendBlock('run() {', '}', () => {
           writer.appendBlock(`describe('${diagram.id}', () => {`, '});', () => {
             diagram.steps.forEach((step) => {
-              writer.appendLine();
               writer.appendBlock(
                 `it('should ${step.id}', () => {`,
                 `});`,
                 () => {
                   writer.appendLine(
-                    `this.${StringTo.functionName(
+                    `this.test${StringTo.className(
                       step.id
-                    )}(steps.${StringTo.functionName(step.id)});`
+                    )}(${StringTo.functionName(step.id)}Step);`
                   );
                 }
               );
@@ -152,22 +182,15 @@ export class UseCaseDiagramTestGenerator
           });
         });
 
+        // Abstracts of the tests
         diagram.steps.forEach((step) => {
-          writer.appendLine();
-          if (step.note) {
-            writer.appendLine('/*');
-            writer.appendLine(`* ${step.note}`);
-            writer.appendLine('*/');
-          }
           writer.appendLine(
-            `abstract ${StringTo.functionName(
+            `abstract test${StringTo.className(
               step.id
-            )}(data: typeof steps.${StringTo.functionName(step.id)}): void;`
+            )}(data: ${StringTo.className(step.id)}StepType): void;`
           );
         });
       }
     );
-
-    return writer.getText();
   }
 }
