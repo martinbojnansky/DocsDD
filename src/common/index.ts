@@ -1,26 +1,55 @@
 export interface UseCaseDiagram {
   id: string;
   participants: UseCaseDiagramParticipant[];
-  steps: UseCaseDiagramStep<any>[]; // UseCaseDiagramStep[];
+  steps: UseCaseDiagramStep[];
 }
 
 export interface UseCaseDiagramParticipant {
   id: string;
 }
 
-export type UseCaseDiagramMessageArrowType = 'solid_arrow' | 'dashed_arrow';
+export type UseCaseDiagramMessageArrowType = '->>' | '-->>';
 
-export interface UseCaseDiagramStep<T> {
+export type UseCaseDiagramStepType = 'arrow' | 'request' | 'response';
+
+export interface UseCaseDiagramStep {
   id: string;
-  from: UseCaseDiagramParticipant;
-  to: UseCaseDiagramParticipant;
+  type: UseCaseDiagramStepType;
   arrow: UseCaseDiagramMessageArrowType;
-  dto: T;
 }
 
-export interface Dto<T> {
+export interface UseCaseDiagramArrowStep extends UseCaseDiagramStep {
+  type: 'arrow';
+  from: UseCaseDiagramParticipant;
+  to: UseCaseDiagramParticipant;
+}
+
+export interface UseCaseDiagramRequestStep<T extends Request = Request>
+  extends UseCaseDiagramStep {
+  type: 'request';
+  from: UseCaseDiagramParticipant;
+  to: UseCaseDiagramParticipant;
+  arrow: '->>';
+  request: T;
+}
+
+export interface UseCaseDiagramResponseStep<T extends Response = Response>
+  extends UseCaseDiagramStep {
+  type: 'response';
+  from: UseCaseDiagramParticipant;
+  to: UseCaseDiagramParticipant;
+  arrow: '-->>';
+  response: T;
+}
+
+export interface Request<T = any> {
   name: string;
-  value: T;
+  body: T;
+}
+
+export interface Response<T = any> {
+  status: number;
+  body: T;
 }
 
 export class StringTo {
@@ -100,8 +129,21 @@ export class UseCaseDiagramGenerator
     writer.appendLine();
 
     diagram.steps.forEach((step) => {
-      const arrow = step.arrow === 'solid_arrow' ? '->>' : '-->>';
-      writer.appendLine(`${step.from.id}${arrow}${step.to.id}: ${step.id}`);
+      switch (step.type) {
+        case 'arrow':
+        case 'request':
+        case 'response':
+          const reqresStep = step as
+            | UseCaseDiagramArrowStep
+            | UseCaseDiagramRequestStep<any>
+            | UseCaseDiagramResponseStep<any>;
+          writer.appendLine(
+            `${reqresStep.from.id}${reqresStep.arrow}${reqresStep.to.id}: ${reqresStep.id}`
+          );
+          break;
+        default:
+          break;
+      }
     });
 
     return writer.getText();
@@ -118,7 +160,7 @@ export class UseCaseDiagramTestGenerator
     writer.appendLine();
     this.generateStepTypes(diagram, writer);
     writer.appendLine();
-    this.generateDtos(diagram, writer);
+    // this.generateDtos(diagram, writer);
     writer.appendLine();
     this.generateTestClass(diagram, writer);
 
