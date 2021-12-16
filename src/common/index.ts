@@ -43,8 +43,9 @@ export interface UseCaseDiagramResponseStep<T extends Response = Response>
 }
 
 export interface Request<T = any> {
-  name: string;
-  body: T;
+  url: string;
+  body?: T;
+  headers?: { [key: string]: string };
 }
 
 export interface Response<T = any> {
@@ -138,7 +139,13 @@ export class UseCaseDiagramGenerator
             | UseCaseDiagramRequestStep<any>
             | UseCaseDiagramResponseStep<any>;
           writer.appendLine(
-            `${reqresStep.from.id}${reqresStep.arrow}${reqresStep.to.id}: ${reqresStep.id}`
+            `${reqresStep.from.id}${reqresStep.arrow}${
+              step.type === 'request'
+                ? '+'
+                : step.type === 'response'
+                ? '-'
+                : ''
+            }${reqresStep.to.id}: ${reqresStep.id}`
           );
           break;
         default:

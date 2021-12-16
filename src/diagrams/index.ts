@@ -48,7 +48,10 @@ export const customersGetAllHappyDiagram: UseCaseDiagram = {
       from: frontend,
       to: api,
       arrow: '->>',
-      request: { query: '?name=startsWith:martin' },
+      request: {
+        url: '/customers',
+        body: { query: '?name=startsWith:martin' },
+      },
     },
 
     <UseCaseDiagramResponseStep>{
@@ -57,7 +60,10 @@ export const customersGetAllHappyDiagram: UseCaseDiagram = {
       from: api,
       to: frontend,
       arrow: '-->>',
-      response: [{ name: 'Customer 1' }, { name: 'Customer 2' }],
+      response: {
+        status: 200,
+        body: [{ name: 'Customer 1' }, { name: 'Customer 2' }],
+      },
     },
 
     <UseCaseDiagramArrowStep>{
