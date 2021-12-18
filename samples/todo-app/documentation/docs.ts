@@ -1,5 +1,5 @@
-import { Docs } from "../../src/models";
 import { todoHappyUseCase } from "./use-cases";
+import { Docs } from "../../../cli/src/models";
 
 export const docs = JSON.stringify(<Docs>{
   title: "TodoApp",

@@ -1,0 +1,6 @@
+node_modules
+dist
+
+documentation/docs.html
+cypress/screenshots
+cypress/videos
