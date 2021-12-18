@@ -5,6 +5,10 @@ export interface Docs {
   useCases: UseCase[];
 }
 
+export interface DocsGenerator<T extends Docs> {
+  generate(docs: T): string;
+}
+
 export interface UseCase {
   id: string;
   participants: UseCaseParticipant[];
@@ -66,5 +70,5 @@ export interface UseCaseResponseStepResponse<T = any> {
 }
 
 export interface UseCaseGenerator<T extends UseCase> {
-  generate(diagram: T): string;
+  generate(useCase: T): string;
 }

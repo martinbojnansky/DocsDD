@@ -6,7 +6,8 @@
   "author": "",
   "license": "",
   "scripts": {
-    "build-docs": "node ../../cli/dist/cli.js documentation/docs.json documentation/docs.html",
+    "build-docs": "node ../../cli/dist/cli.js docs --input=documentation/docs.json --output=documentation/docs.html",
+    "watch-docs": "npm run build-docs -- --watch",
     "test": "cypress open",
     "test:prod": "cypress run"
   },
