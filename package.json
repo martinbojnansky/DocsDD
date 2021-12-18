@@ -6,7 +6,7 @@
     "build": "webpack",
     "build:prod": "webpack --mode=production",
     "watch": "webpack --watch --progress",
-    "docsdd:todo-app": "node dist/cli.js samples/todo-app/schema.json samples/todo-app/docsdd.html"
+    "docsdd:todo-app": "node dist/cli.js samples/todo-app/docs.json samples/todo-app/docs.html"
   },
   "dependencies": {
     "mermaid": "^8.13.6",

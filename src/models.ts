@@ -1,63 +1,70 @@
-export interface UseCaseDiagram {
-  id: string;
-  participants: UseCaseDiagramParticipant[];
-  steps: UseCaseDiagramStep[];
+export interface Docs {
+  title: string;
+  description: string;
+  version: string;
+  useCases: UseCase[];
 }
 
-export interface UseCaseDiagramParticipant {
+export interface UseCase {
+  id: string;
+  participants: UseCaseParticipant[];
+  steps: UseCaseStep[];
+}
+
+export interface UseCaseParticipant {
   id: string;
 }
 
-export type UseCaseDiagramMessageArrowType = "->>" | "-->>";
+export type UseCaseStepArrowType = "->>" | "-->>";
 
-export type UseCaseDiagramStepType = "arrow" | "request" | "response";
+export type UseCaseStepType = "arrow" | "request" | "response";
 
-export interface UseCaseDiagramStep {
+export interface UseCaseStep {
   id: string;
-  type: UseCaseDiagramStepType;
-  arrow: UseCaseDiagramMessageArrowType;
+  type: UseCaseStepType;
+  arrow: UseCaseStepArrowType;
   note?: string;
 }
 
-export interface UseCaseDiagramArrowStep extends UseCaseDiagramStep {
+export interface UseCaseArrowStep extends UseCaseStep {
   type: "arrow";
-  from: UseCaseDiagramParticipant;
-  to: UseCaseDiagramParticipant;
+  from: UseCaseParticipant;
+  to: UseCaseParticipant;
 }
 
-export interface UseCaseDiagramRequestStep<
-  T extends UseCaseDiagramStepRequest = UseCaseDiagramStepRequest
-> extends UseCaseDiagramStep {
+export interface UseCaseRequestStep<
+  T extends UseCaseRequestStepRequest = UseCaseRequestStepRequest
+> extends UseCaseStep {
   type: "request";
-  from: UseCaseDiagramParticipant;
-  to: UseCaseDiagramParticipant;
+  from: UseCaseParticipant;
+  to: UseCaseParticipant;
   arrow: "->>";
   request: T;
 }
 
-export interface UseCaseDiagramResponseStep<
-  T extends UseCaseDiagramStepResponse = UseCaseDiagramStepResponse
-> extends UseCaseDiagramStep {
+export interface UseCaseResponseStep<
+  T extends UseCaseResponseStepResponse = UseCaseResponseStepResponse
+> extends UseCaseStep {
   type: "response";
-  from: UseCaseDiagramParticipant;
-  to: UseCaseDiagramParticipant;
+  from: UseCaseParticipant;
+  to: UseCaseParticipant;
   arrow: "-->>";
   response: T;
 }
 
-export interface UseCaseDiagramStepRequest<T = any> {
+export interface UseCaseRequestStepRequest<T = any> {
   method: "get" | "post" | "update" | "patch" | "delete";
   url: string;
   body?: T;
   headers?: { [key: string]: string };
 }
 
-export interface UseCaseDiagramStepResponse<T = any> {
+export interface UseCaseResponseStepResponse<T = any> {
   status: number;
   body: T;
   headers?: { [key: string]: string };
 }
 
-export interface UseCaseDiagramGenerator<T> {
+export interface UseCaseGenerator<T extends UseCase> {
   generate(diagram: T): string;
 }

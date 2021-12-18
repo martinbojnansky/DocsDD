@@ -1,17 +1,15 @@
 import { className, functionName } from "./helpers";
 import {
-  UseCaseDiagram,
-  UseCaseDiagramArrowStep,
-  UseCaseDiagramGenerator,
-  UseCaseDiagramRequestStep,
-  UseCaseDiagramResponseStep,
+  UseCase,
+  UseCaseArrowStep,
+  UseCaseGenerator,
+  UseCaseRequestStep,
+  UseCaseResponseStep,
 } from "./models";
 import { StringWriter } from "./writers";
 
-export class UseCaseDiagramGeneratorImpl
-  implements UseCaseDiagramGenerator<UseCaseDiagram>
-{
-  generate(diagram: UseCaseDiagram): string {
+export class UseCaseDiagramGenerator implements UseCaseGenerator<UseCase> {
+  generate(diagram: UseCase): string {
     const writer = new StringWriter();
 
     writer.appendLine("sequenceDiagram");
@@ -29,9 +27,9 @@ export class UseCaseDiagramGeneratorImpl
         case "request":
         case "response":
           const reqresStep = step as
-            | UseCaseDiagramArrowStep
-            | UseCaseDiagramRequestStep<any>
-            | UseCaseDiagramResponseStep<any>;
+            | UseCaseArrowStep
+            | UseCaseRequestStep<any>
+            | UseCaseResponseStep<any>;
           writer.appendLine(
             `${reqresStep.from.id}${reqresStep.arrow}${
               step.type === "request"
@@ -52,10 +50,8 @@ export class UseCaseDiagramGeneratorImpl
   }
 }
 
-export class UseCaseDiagramCypressTestGenerator
-  implements UseCaseDiagramGenerator<UseCaseDiagram>
-{
-  generate(diagram: UseCaseDiagram): string {
+export class UseCaseCypressTestsGenerator implements UseCaseGenerator<UseCase> {
+  generate(diagram: UseCase): string {
     const writer = new StringWriter();
 
     this.generateStepConstants(diagram, writer);
@@ -69,10 +65,7 @@ export class UseCaseDiagramCypressTestGenerator
     return writer.getText();
   }
 
-  protected generateStepConstants(
-    diagram: UseCaseDiagram,
-    writer: StringWriter
-  ) {
+  protected generateStepConstants(diagram: UseCase, writer: StringWriter) {
     diagram.steps.forEach((step) => {
       writer.appendLine(
         `export const ${functionName(step.id)}Step = ${JSON.stringify(step)};`
@@ -80,7 +73,7 @@ export class UseCaseDiagramCypressTestGenerator
     });
   }
 
-  protected generateStepTypes(diagram: UseCaseDiagram, writer: StringWriter) {
+  protected generateStepTypes(diagram: UseCase, writer: StringWriter) {
     diagram.steps.forEach((step) => {
       writer.appendLine(
         `export type ${className(step.id)}StepType = typeof ${functionName(
@@ -90,7 +83,7 @@ export class UseCaseDiagramCypressTestGenerator
     });
   }
 
-  protected generateDtos(diagram: UseCaseDiagram, writer: StringWriter) {
+  protected generateDtos(diagram: UseCase, writer: StringWriter) {
     diagram.steps.forEach((step) => {
       writer.appendLine(
         `export type ${className(step.id)}Dto = typeof ${functionName(
@@ -100,7 +93,7 @@ export class UseCaseDiagramCypressTestGenerator
     });
   }
 
-  protected generateTestClass(diagram: UseCaseDiagram, writer: StringWriter) {
+  protected generateTestClass(diagram: UseCase, writer: StringWriter) {
     writer.appendBlock(
       `export abstract class ${className(diagram.id)}Tests {`,
       `}`,

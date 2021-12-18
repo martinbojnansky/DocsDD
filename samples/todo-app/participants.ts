@@ -1,17 +1,17 @@
-import { UseCaseDiagramParticipant } from "../../src/models";
+import { UseCaseParticipant } from "../../src/models";
 
-export const user: UseCaseDiagramParticipant = {
+export const user: UseCaseParticipant = {
   id: "user",
 };
 
-export const frontend: UseCaseDiagramParticipant = {
+export const frontend: UseCaseParticipant = {
   id: "frontend",
 };
 
-export const api: UseCaseDiagramParticipant = {
+export const api: UseCaseParticipant = {
   id: "api",
 };
 
-export const server: UseCaseDiagramParticipant = {
+export const server: UseCaseParticipant = {
   id: "server",
 };
