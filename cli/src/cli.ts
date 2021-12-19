@@ -42,18 +42,9 @@ function getDocs(params: CliParams): Docs {
   const fileContent = fs
     .readFileSync(`${process.cwd()}/${params.input}`)
     .toString();
-  const tsConfig: ts.TranspileOptions = params.tsConfig
-    ? JSON.parse(
-        fs.readFileSync(`${process.cwd()}/${params.tsConfig}`).toString()
-      )
-    : {
-        compilerOptions: {
-          module: "commonjs",
-        },
-      };
 
   if (params.input.endsWith(".ts")) {
-    return eval(ts.transpileModule(fileContent, tsConfig).outputText);
+    return eval(ts.transpileModule(fileContent, {}).outputText);
   } else if (params.input.endsWith(".js")) {
     return eval(fileContent);
   } else if (params.input.endsWith(".json")) {
