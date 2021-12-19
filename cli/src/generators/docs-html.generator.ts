@@ -12,8 +12,14 @@ export class DocsHtmlGenerator implements DocsGenerator<Docs> {
       });
 
       writer.appendBlock("<body>", "</body>", () => {
+        writer.appendLine(`<h1>DocsDD - ${docs.title}</h1>`);
+        writer.appendLine(`<p>${docs.description}</p>`);
+
         docs.useCases.forEach((useCase) => {
           writer.appendBlock("<h2>", "</h2>", () => writer.append(useCase.id));
+          if (useCase.description) {
+            writer.appendLine(`<p>${useCase.description}</p>`);
+          }
           writer.appendBlock(
             `<pre id="diagram-${useCase.id}" class="mermaid">`,
             "</pre>",

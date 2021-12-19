@@ -21,6 +21,7 @@ const participants: { [key: string]: UseCaseParticipant } = {
 
 const todoHappyUseCase: UseCase = {
   id: "todo--happy",
+  description: "Basic usage of todos management.",
   participants: Object.keys(participants).map((key) => participants[key]),
   steps: [
     <UseCaseMessageStep>{

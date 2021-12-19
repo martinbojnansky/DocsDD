@@ -11,6 +11,7 @@ export interface DocsGenerator<T extends Docs> {
 
 export interface UseCase {
   id: string;
+  description?: string;
   participants: UseCaseParticipant[];
   steps: UseCaseStep[];
 }
