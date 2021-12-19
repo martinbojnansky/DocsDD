@@ -7,7 +7,7 @@ import {
   UseCaseResponseStep,
 } from "../../../cli/src/models";
 
-export const participants: { [key: string]: UseCaseParticipant } = {
+const participants: { [key: string]: UseCaseParticipant } = {
   user: {
     id: "user",
   },
@@ -19,7 +19,7 @@ export const participants: { [key: string]: UseCaseParticipant } = {
   },
 };
 
-export const todoHappyUseCase: UseCase = {
+const todoHappyUseCase: UseCase = {
   id: "todo--happy",
   participants: Object.keys(participants).map((key) => participants[key]),
   steps: [
