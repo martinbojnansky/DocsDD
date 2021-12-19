@@ -4,6 +4,7 @@ import { HtmlDocsGenerator } from "./generators/docs/docs.generator";
 import { CypressUseCaseTestsGenerator } from "./generators/use-case/cypress-use-case-tests.generator";
 import { CliParams, parseCliParams } from "./helpers/cli-params.helper";
 import { Docs } from "./models";
+import * as ts from "typescript";
 
 run();
 
@@ -38,9 +39,26 @@ function watch(
 }
 
 function getDocs(params: CliParams): Docs {
-  return JSON.parse(
-    fs.readFileSync(`${process.cwd()}/${params.input}`).toString()
-  ) as Docs;
+  const fileContent = fs
+    .readFileSync(`${process.cwd()}/${params.input}`)
+    .toString();
+  const tsConfig: ts.TranspileOptions = params.tsConfig
+    ? JSON.parse(
+        fs.readFileSync(`${process.cwd()}/${params.tsConfig}`).toString()
+      )
+    : {
+        compilerOptions: {
+          module: "commonjs",
+        },
+      };
+
+  if (params.input.endsWith(".ts")) {
+    return eval(ts.transpileModule(fileContent, tsConfig).outputText);
+  } else if (params.input.endsWith(".js")) {
+    return eval(fileContent);
+  } else if (params.input.endsWith(".json")) {
+    return JSON.parse(fileContent) as Docs;
+  }
 }
 
 function generateDocs(params: CliParams) {
