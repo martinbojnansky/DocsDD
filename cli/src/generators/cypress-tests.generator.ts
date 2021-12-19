@@ -1,11 +1,17 @@
-import { className } from "../../helpers/naming.helper";
-import { StringWriter } from "../../helpers/string.helper";
-import { UseCase, UseCaseGenerator } from "../../models";
+import { className } from "../helpers/naming.helper";
+import { StringWriter } from "../helpers/string.helper";
+import { Docs, DocsGenerator, UseCase, UseCaseGenerator } from "../models";
 
-export class CypressUseCaseTestsGenerator implements UseCaseGenerator<UseCase> {
-  generate(useCase: UseCase): string {
+export class CypressTestsGenerator implements DocsGenerator<Docs> {
+  generate(docs: Docs): string {
     const writer = new StringWriter();
 
+    docs.useCases.forEach((useCase) => this.generateUseCase(useCase, writer));
+
+    return writer.getText();
+  }
+
+  protected generateUseCase(useCase: UseCase, writer: StringWriter) {
     writer.appendBlock(
       `export abstract class ${className(useCase.id)}Tests {`,
       `}`,
@@ -55,7 +61,5 @@ export class CypressUseCaseTestsGenerator implements UseCaseGenerator<UseCase> {
         });
       }
     );
-
-    return writer.getText();
   }
 }

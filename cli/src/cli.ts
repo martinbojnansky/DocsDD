@@ -1,28 +1,34 @@
 /* See: https://www.youtube.com/watch?v=e1KJ47tyCso*/
 import * as fs from "fs";
-import { HtmlDocsGenerator } from "./generators/docs/docs.generator";
-import { CypressUseCaseTestsGenerator } from "./generators/use-case/cypress-use-case-tests.generator";
+import { DocsHtmlGenerator } from "./generators/docs-html.generator";
+import { CypressTestsGenerator } from "./generators/cypress-tests.generator";
 import { CliParams, parseCliParams } from "./helpers/cli-params.helper";
-import { Docs } from "./models";
+import { Docs, UseCaseGenerator } from "./models";
 import * as ts from "typescript";
 
-run();
+try {
+  run();
+} catch (e) {
+  unhandledException();
+}
 
 function run() {
-  const command = process.argv[2] as "docs" | "tests";
+  const command = process.argv[2] as "docs" | "tests" | "help";
   const params = parseCliParams(process.argv.slice(3));
 
   switch (command) {
     case "docs":
-      params.watch
-        ? watch(params, () => generateDocs(params))
-        : generateDocs(params);
+      watch(params, () => generateDocs(params));
       break;
     case "tests":
-      params.watch
-        ? watch(params, () => generateTests(params))
-        : generateTests(params);
+      watch(params, () => generateTests(params));
+      break;
+    case "help":
+      help();
+      break;
     default:
+      console.error(`Command '${command}' not recognized.`);
+      help();
       break;
   }
 }
@@ -31,9 +37,19 @@ function watch(
   params: CliParams,
   onChange: (event?: fs.WatchEventType, fileName?: string) => void
 ) {
+  try {
+    onChange();
+  } catch {
+    unhandledException();
+  }
+
   if (params.watch) {
     fs.watch(`${process.cwd()}/${params.input}`, (event, filename) => {
-      onChange(event, filename);
+      try {
+        onChange(event, filename);
+      } catch (e) {
+        unhandledException();
+      }
     });
   }
 }
@@ -54,8 +70,12 @@ function getDocs(params: CliParams): Docs {
 
 function generateDocs(params: CliParams) {
   const docs = getDocs(params);
-  const htmlDocs = new HtmlDocsGenerator().generate(docs);
-  fs.writeFileSync(`${process.cwd()}/${params.output}`, htmlDocs);
+  const htmlDocs = new DocsHtmlGenerator().generate(docs);
+  const outputPath = `${process.cwd()}/${params.output}`;
+  fs.writeFileSync(outputPath, htmlDocs);
+  console.log(
+    `${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}: '${outputPath}' sucessfully generated.`
+  );
 }
 
 function generateTests(params: CliParams) {
@@ -63,10 +83,25 @@ function generateTests(params: CliParams) {
   let tests: string;
   switch (params.target) {
     case "cypress":
-      tests = new CypressUseCaseTestsGenerator().generate(docs.useCases[0]);
+      tests = new CypressTestsGenerator().generate(docs);
       break;
     default:
+      console.error(`Target '${params.target}' not supported.`);
       break;
   }
-  fs.writeFileSync(`${process.cwd()}/${params.output}`, tests);
+  const outputPath = `${process.cwd()}/${params.output}`;
+  fs.writeFileSync(outputPath, tests);
+  console.log(
+    `${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}: '${outputPath}' sucessfully generated.`
+  );
+}
+
+function help() {
+  // TODO
+}
+
+function unhandledException() {
+  console.error(
+    `${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}: Unhandled exception occured.`
+  );
 }

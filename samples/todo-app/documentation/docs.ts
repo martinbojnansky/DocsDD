@@ -37,6 +37,7 @@ const todoHappyUseCase: UseCase = {
       from: participants.frontend,
       to: participants.user,
       arrow: "-->>",
+      note: "Display loading indicator.",
     },
 
     <UseCaseRequestStep>{

@@ -4,7 +4,7 @@ export type CliParams = {
 
 export const parseCliParam = (arg: string): CliParams => {
   if (!arg.startsWith("--")) {
-    return {};
+    console.error(`Parameter '${arg}' not recognized.`);
   } else if (arg.includes("=")) {
     const parts = arg.split("=");
     return { [parts[0].substring(2)]: parts[1] };

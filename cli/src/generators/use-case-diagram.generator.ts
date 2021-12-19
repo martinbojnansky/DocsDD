@@ -1,11 +1,11 @@
-import { StringWriter } from "../../helpers/string.helper";
+import { StringWriter } from "../helpers/string.helper";
 import {
   UseCase,
   UseCaseMessageStep,
   UseCaseGenerator,
   UseCaseRequestStep,
   UseCaseResponseStep,
-} from "../../models";
+} from "../models";
 
 export class UseCaseDiagramGenerator implements UseCaseGenerator<UseCase> {
   generate(useCase: UseCase): string {
@@ -25,24 +25,28 @@ export class UseCaseDiagramGenerator implements UseCaseGenerator<UseCase> {
         case "message":
         case "request":
         case "response":
-          const reqresStep = step as
+          const messageStep = step as
             | UseCaseMessageStep
             | UseCaseRequestStep
             | UseCaseResponseStep;
           writer.appendLine(
-            `${reqresStep.from.id}${reqresStep.arrow}${
+            `${messageStep.from.id}${messageStep.arrow}${
               step.type === "request"
                 ? "+"
                 : step.type === "response"
                 ? "-"
                 : ""
-            }${reqresStep.to.id}: ${reqresStep.id}`
+            }${messageStep.to.id}: ${messageStep.id}`
           );
+          if (messageStep.note) {
+            writer.appendLine(
+              `Note over ${messageStep.from.id},${messageStep.to.id}: ${messageStep.note}`
+            );
+          }
           break;
         default:
           break;
       }
-      // TODO: Generate note
     });
 
     return writer.getText();

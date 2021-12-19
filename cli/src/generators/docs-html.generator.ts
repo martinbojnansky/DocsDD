@@ -1,8 +1,8 @@
-import { StringWriter } from "../../helpers/string.helper";
-import { Docs, DocsGenerator } from "../../models";
-import { UseCaseDiagramGenerator } from "../use-case/use-case-diagram.generator";
+import { StringWriter } from "../helpers/string.helper";
+import { Docs, DocsGenerator } from "../models";
+import { UseCaseDiagramGenerator } from "./use-case-diagram.generator";
 
-export class HtmlDocsGenerator implements DocsGenerator<Docs> {
+export class DocsHtmlGenerator implements DocsGenerator<Docs> {
   generate(docs: Docs): string {
     const writer = new StringWriter();
 
