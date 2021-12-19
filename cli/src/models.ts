@@ -21,7 +21,7 @@ export interface UseCaseParticipant {
 
 export type UseCaseStepArrowType = "->>" | "-->>";
 
-export type UseCaseStepType = "arrow" | "request" | "response";
+export type UseCaseStepType = "message" | "request" | "response";
 
 export interface UseCaseStep {
   id: string;
@@ -30,10 +30,11 @@ export interface UseCaseStep {
   note?: string;
 }
 
-export interface UseCaseArrowStep extends UseCaseStep {
-  type: "arrow";
+export interface UseCaseMessageStep<T = any> extends UseCaseStep {
+  type: "message";
   from: UseCaseParticipant;
   to: UseCaseParticipant;
+  message: T;
 }
 
 export interface UseCaseRequestStep<

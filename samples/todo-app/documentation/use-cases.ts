@@ -1,6 +1,6 @@
 import {
   UseCase,
-  UseCaseArrowStep,
+  UseCaseMessageStep,
   UseCaseRequestStep,
   UseCaseResponseStep,
 } from "../../../cli/src/models";
@@ -10,17 +10,17 @@ export const todoHappyUseCase: UseCase = {
   id: "todo--happy",
   participants: Object.keys(participants).map((key) => participants[key]),
   steps: [
-    <UseCaseArrowStep>{
+    <UseCaseMessageStep>{
       id: "visit-todos-view",
-      type: "arrow",
+      type: "message",
       from: participants.user,
       to: participants.frontend,
       arrow: "->>",
     },
 
-    <UseCaseArrowStep>{
+    <UseCaseMessageStep>{
       id: "display-todos-view",
-      type: "arrow",
+      type: "message",
       from: participants.frontend,
       to: participants.user,
       arrow: "-->>",
@@ -30,7 +30,7 @@ export const todoHappyUseCase: UseCase = {
       id: "get-all-todos",
       type: "request",
       from: participants.frontend,
-      to: participants.api,
+      to: participants.backend,
       arrow: "->>",
       request: {
         method: "get",
@@ -42,7 +42,7 @@ export const todoHappyUseCase: UseCase = {
     <UseCaseResponseStep>{
       id: "return-all-todos--empty",
       type: "response",
-      from: participants.api,
+      from: participants.backend,
       to: participants.frontend,
       arrow: "-->>",
       response: {
@@ -51,27 +51,30 @@ export const todoHappyUseCase: UseCase = {
       },
     },
 
-    <UseCaseArrowStep>{
+    <UseCaseMessageStep>{
       id: "display-todos-list",
-      type: "arrow",
+      type: "message",
       from: participants.frontend,
       to: participants.user,
       arrow: "-->>",
     },
 
-    <UseCaseArrowStep>{
+    <UseCaseMessageStep>{
       id: "add-todo--first",
-      type: "arrow",
+      type: "message",
       from: participants.user,
       to: participants.frontend,
       arrow: "->>",
+      message: {
+        name: "Walk the dog!",
+      },
     },
 
     <UseCaseRequestStep>{
       id: "post-todo--first",
       type: "request",
       from: participants.frontend,
-      to: participants.api,
+      to: participants.backend,
       arrow: "->>",
       request: {
         method: "post",
@@ -86,7 +89,7 @@ export const todoHappyUseCase: UseCase = {
     <UseCaseResponseStep>{
       id: "return-created-todo--first",
       type: "response",
-      from: participants.api,
+      from: participants.backend,
       to: participants.frontend,
       arrow: "-->>",
       response: {
@@ -100,9 +103,9 @@ export const todoHappyUseCase: UseCase = {
       },
     },
 
-    <UseCaseArrowStep>{
+    <UseCaseMessageStep>{
       id: "display-created-todo--first",
-      type: "arrow",
+      type: "message",
       from: participants.frontend,
       to: participants.user,
       arrow: "-->>",

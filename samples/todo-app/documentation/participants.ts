@@ -8,17 +8,12 @@ const frontend: UseCaseParticipant = {
   id: "frontend",
 };
 
-const api: UseCaseParticipant = {
-  id: "api",
-};
-
-const server: UseCaseParticipant = {
-  id: "server",
+const backend: UseCaseParticipant = {
+  id: "backend",
 };
 
 export const participants = {
   ...{ user },
   ...{ frontend },
-  ...{ api },
-  ...{ server },
+  ...{ backend },
 };

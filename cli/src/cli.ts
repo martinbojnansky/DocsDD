@@ -1,6 +1,7 @@
 /* See: https://www.youtube.com/watch?v=e1KJ47tyCso*/
 import * as fs from "fs";
 import { HtmlDocsGenerator } from "./generators/docs/docs.generator";
+import { CypressUseCaseTestsGenerator } from "./generators/use-case/cypress-use-case-tests.generator";
 import { CliParams, parseCliParams } from "./helpers/cli-params.helper";
 import { Docs } from "./models";
 
@@ -12,32 +13,51 @@ function run() {
 
   switch (command) {
     case "docs":
-      params.watch ? watchAndGenerateDocs(params) : generateDocs(params);
+      params.watch
+        ? watch(params, () => generateDocs(params))
+        : generateDocs(params);
       break;
+    case "tests":
+      params.watch
+        ? watch(params, () => generateTests(params))
+        : generateTests(params);
     default:
-    /* TODO Unknown command error. */
+      break;
   }
 }
 
-function watchAndGenerateDocs(params: CliParams) {
+function watch(
+  params: CliParams,
+  onChange: (event?: fs.WatchEventType, fileName?: string) => void
+) {
   if (params.watch) {
     fs.watch(`${process.cwd()}/${params.input}`, (event, filename) => {
-      try {
-        generateDocs(params);
-      } catch {
-        // TODO: Log error.
-      }
+      onChange(event, filename);
     });
   }
 }
 
-function generateDocs(params: CliParams) {
-  const docs = JSON.parse(
+function getDocs(params: CliParams): Docs {
+  return JSON.parse(
     fs.readFileSync(`${process.cwd()}/${params.input}`).toString()
   ) as Docs;
+}
+
+function generateDocs(params: CliParams) {
+  const docs = getDocs(params);
   const htmlDocs = new HtmlDocsGenerator().generate(docs);
-
   fs.writeFileSync(`${process.cwd()}/${params.output}`, htmlDocs);
+}
 
-  // TODO: Log success
+function generateTests(params: CliParams) {
+  const docs = getDocs(params);
+  let tests: string;
+  switch (params.target) {
+    case "cypress":
+      tests = new CypressUseCaseTestsGenerator().generate(docs.useCases[0]);
+      break;
+    default:
+      break;
+  }
+  fs.writeFileSync(`${process.cwd()}/${params.output}`, tests);
 }

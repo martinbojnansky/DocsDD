@@ -1,5 +1,5 @@
 export type CliParams = {
-  [key in "watch" | "input" | "output"]?: string;
+  [key in "watch" | "input" | "output" | "target"]?: string;
 };
 
 export const parseCliParam = (arg: string): CliParams => {

@@ -1,7 +1,7 @@
 import { StringWriter } from "../../helpers/string.helper";
 import {
   UseCase,
-  UseCaseArrowStep,
+  UseCaseMessageStep,
   UseCaseGenerator,
   UseCaseRequestStep,
   UseCaseResponseStep,
@@ -22,13 +22,13 @@ export class UseCaseDiagramGenerator implements UseCaseGenerator<UseCase> {
 
     useCase.steps.forEach((step) => {
       switch (step.type) {
-        case "arrow":
+        case "message":
         case "request":
         case "response":
           const reqresStep = step as
-            | UseCaseArrowStep
-            | UseCaseRequestStep<any>
-            | UseCaseResponseStep<any>;
+            | UseCaseMessageStep
+            | UseCaseRequestStep
+            | UseCaseResponseStep;
           writer.appendLine(
             `${reqresStep.from.id}${reqresStep.arrow}${
               step.type === "request"

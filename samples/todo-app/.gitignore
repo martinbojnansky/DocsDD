@@ -4,3 +4,4 @@ dist
 documentation/docs.html
 cypress/screenshots
 cypress/videos
+cypress/**/_abstracts.ts
