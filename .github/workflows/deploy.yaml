@@ -9,7 +9,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  deploy-cli:
+  deploy:
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -20,6 +20,7 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
+          registry-url: 'https://registry.npmjs.org'
       - name: Build CLI
         run: |
           npm ci
