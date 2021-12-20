@@ -77,8 +77,8 @@ const todoHappyUseCase: UseCase = {
 };
 
 export const docs: Docs = {
-  title: 'TodoApp',
-  description: 'Sample documentation of todo list application.',
+  title: '01 - Getting started',
+  description: 'A simple docs sample.',
   version: '0.0.1',
   useCases: [todoHappyUseCase],
 };
