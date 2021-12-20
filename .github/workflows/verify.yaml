@@ -19,12 +19,12 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
-      - name: build-cli
+      - name: Build CLI
         working-directory: cli
         run: |
           npm ci
           npm run build:prod
-      - name: test-samples
+      - name: Test
         working-directory: samples
         run: |
           npm ci
