@@ -28,31 +28,50 @@ const todoHappyUseCase: UseCase = {
     },
 
     <UseCaseMessageStep>{
-      id: 'display-todos',
+      id: 'display-todos--empty',
       type: 'message',
       from: participants.frontend,
       to: participants.user,
       arrow: '-->>',
-      note: 'Should be empty for the first time.',
     },
 
     <UseCaseMessageStep>{
-      id: 'add-todo',
+      id: 'add-todo--first',
       type: 'message',
       from: participants.user,
       to: participants.frontend,
       arrow: '->>',
       message: {
-        name: 'Walk the dog!',
+        title: 'Walk the dog!',
       },
     },
 
     <UseCaseMessageStep>{
-      id: 'complete-todo',
+      id: 'display-todos--first',
       type: 'message',
       from: participants.frontend,
       to: participants.user,
       arrow: '-->>',
+      message: {
+        title: 'Walk the dog!',
+      },
+    },
+
+    <UseCaseMessageStep>{
+      id: 'complete-todo--first',
+      type: 'message',
+      from: participants.user,
+      to: participants.frontend,
+      arrow: '->>',
+    },
+
+    <UseCaseMessageStep>{
+      id: 'completed-todo--first',
+      type: 'message',
+      from: participants.frontend,
+      to: participants.user,
+      arrow: '-->>',
+      note: 'Done',
     },
   ],
 };
