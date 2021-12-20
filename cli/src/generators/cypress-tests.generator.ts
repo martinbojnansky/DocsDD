@@ -22,13 +22,15 @@ export class CypressTestsGenerator implements DocsGenerator<Docs> {
       }', {`,
       `});`,
       () => {
-        useCase.steps.forEach((step) => {
-          writer.appendLine(
-            `${functionName(step.id)}: new TestFunction('${
-              step.id
-            }', ${JSON.stringify(step)}),`
-          );
-        });
+        useCase.steps
+          .filter((step) => !step.skipTest)
+          .forEach((step) => {
+            writer.appendLine(
+              `${functionName(step.id)}: new TestFunction('${
+                step.id
+              }', ${JSON.stringify(step)}),`
+            );
+          });
       }
     );
   }

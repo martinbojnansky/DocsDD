@@ -1,3 +1,4 @@
+import { Log } from "../helpers/log.helper";
 import { StringWriter } from "../helpers/string.helper";
 import {
   UseCase,
@@ -45,6 +46,7 @@ export class UseCaseDiagramGenerator implements UseCaseGenerator<UseCase> {
           }
           break;
         default:
+          Log.warn(`Unsupported step type '${step.type}'.`);
           break;
       }
     });

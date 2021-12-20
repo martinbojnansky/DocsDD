@@ -8,7 +8,7 @@ export class Log {
   }
 
   static error(text: string) {
-    Log.log("ERROR   ", "\x1b[31m", text);
+    Log.log("ERROR  ", "\x1b[31m", text);
   }
 
   static warn(text: string) {

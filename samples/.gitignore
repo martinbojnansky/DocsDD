@@ -1,7 +1,7 @@
 node_modules
 dist
 
-documentation/docs.html
+**/docs.html
 cypress/screenshots
 cypress/videos
 cypress/**/_tests.ts

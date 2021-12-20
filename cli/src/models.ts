@@ -29,6 +29,7 @@ export interface UseCaseStep {
   type: UseCaseStepType;
   arrow: UseCaseStepArrowType;
   note?: string;
+  skipTest?: boolean;
 }
 
 export interface UseCaseMessageStep<T = any> extends UseCaseStep {

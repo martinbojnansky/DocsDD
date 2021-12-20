@@ -17,7 +17,7 @@
   <body>
     <section class="todoapp">
       <header class="header">
-        <h1>todos</h1>
+        <h1 data-tid="todos-view__title">todos</h1>
         <input
           class="new-todo"
           autofocus
@@ -25,6 +25,7 @@
           placeholder="What needs to be done?"
           v-model="newTodo"
           @keyup.enter="addTodo"
+          data-tid="todos-view__input"
         />
       </header>
       <section class="main" v-show="todos.length" v-cloak>
@@ -35,16 +36,26 @@
           v-model="allDone"
         />
         <label for="toggle-all"></label>
-        <ul class="todo-list">
+        <ul class="todo-list" data-tid="todos-view__list">
           <li
             v-for="todo in filteredTodos"
             class="todo"
             :key="todo.id"
             :class="{ completed: todo.completed, editing: todo == editedTodo }"
+            data-tid="todos-view__item"
           >
             <div class="view">
-              <input class="toggle" type="checkbox" v-model="todo.completed" />
-              <label @dblclick="editTodo(todo)">{{ todo.title }}</label>
+              <input
+                class="toggle"
+                type="checkbox"
+                v-model="todo.completed"
+                data-tid="todos-view__item__toggle"
+              />
+              <label
+                @dblclick="editTodo(todo)"
+                data-tid="todos-view__item__label"
+                >{{ todo.title }}</label
+              >
               <button class="destroy" @click="removeTodo(todo)"></button>
             </div>
             <input
