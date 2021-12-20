@@ -1,6 +1,6 @@
 {
   "name": "docsdd",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "CLI for automated UML and tests generation using Typescript definition.",
   "main": "cli.js",
   "author": "Martin Bojnansky",
@@ -13,9 +13,7 @@
   "bin": {
     "docsdd": "dist/cli.js"
   },
-  "dependencies": {
-    "mermaid": "^8.13.6"
-  },
+  "dependencies": {},
   "devDependencies": {
     "@types/mermaid": "^8.2.7",
     "prettier": "^2.5.1",
