@@ -2,9 +2,9 @@ name: verify
 
 on:
   push:
-    # branches-ignore: [master]
+    branches-ignore: []
   pull_request:
-    # branches-ignore: [master]
+    branches-ignore: []
 
 concurrency:
   group: verify#${{ github.ref }}
