@@ -1,7 +1,10 @@
 {
-  "name": "typescript",
-  "version": "0.0.0",
-  "private": true,
+  "name": "docsdd",
+  "version": "0.0.1",
+  "description": "CLI for automated UML and tests generation using Typescript definition.",
+  "main": "cli.js",
+  "author": "Martin Bojnansky",
+  "license": "",
   "scripts": {
     "build": "webpack",
     "build:watch": "webpack --watch --progress",
@@ -15,7 +18,6 @@
   },
   "devDependencies": {
     "@types/mermaid": "^8.2.7",
-    "copy-webpack-plugin": "^10.2.0",
     "prettier": "^2.5.1",
     "ts-loader": "^9.2.6",
     "typescript": "4.5.4",

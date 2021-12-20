@@ -1,9 +1,9 @@
 {
-  "name": "todo-app",
+  "name": "docsdd-samples",
   "version": "0.0.1",
   "description": "Sample Todo app to demostrate DocsDD.",
   "main": "index.js",
-  "author": "",
+  "author": "Martin Bojnansky",
   "license": "",
   "scripts": {
     "build-docs": "docsdd docs --input=01_getting-started/docs.ts --output=01_getting-started//docs.html",

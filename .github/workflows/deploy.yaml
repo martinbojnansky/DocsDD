@@ -1,18 +1,19 @@
-name: verify
+name: deploy
 
 on:
   push:
-    branches-ignore: [prod]
-  pull_request:
-    branches-ignore: [prod]
+    branches: [prod]
 
 concurrency:
-  group: verify#${{ github.ref }}
+  group: deploy#${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  verify-samples:
+  deploy-cli:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: cli
     steps:
       - uses: actions/checkout@v2
       - name: Use Node.js ${{ matrix.node-version }}
@@ -20,12 +21,11 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
       - name: Build CLI
-        working-directory: cli
         run: |
           npm ci
           npm run build:prod
-      - name: Test
-        working-directory: samples
+      - name: Publish NPM package
         run: |
-          npm ci
-          npm run tests:headless
+          npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

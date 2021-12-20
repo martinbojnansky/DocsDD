@@ -1,5 +1,5 @@
+const webpack = require('webpack');
 const path = require('path');
-// const CopyPlugin = require("copy-webpack-plugin");
 
 module.exports = {
   devtool: 'eval-source-map',
@@ -23,11 +23,9 @@ module.exports = {
     extensions: ['.ts', '.js']
   },
   plugins: [
-    // new CopyPlugin({
-    //   patterns: [
-    //      { from: "src/index.html", to: "index.html" },
-    //   ],
-    // }),
+    new webpack.BannerPlugin({
+      banner: '#!/usr/bin/env node'
+    })
   ],
   target: 'node',
 }
