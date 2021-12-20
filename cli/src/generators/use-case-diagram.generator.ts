@@ -2,8 +2,8 @@ import { Log } from '../helpers/log.helper';
 import { StringWriter } from '../helpers/string.helper';
 import {
   UseCase,
-  UseCaseMessageStep,
   UseCaseGenerator,
+  UseCaseMessageStep,
   UseCaseRequestStep,
   UseCaseResponseStep,
 } from '../models';

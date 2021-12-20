@@ -1,11 +1,11 @@
 import * as fs from 'fs';
-import { DocsHtmlGenerator } from './generators/docs-html.generator';
-import { CypressTestsGenerator } from './generators/cypress-tests.generator';
-import { CliParams, parseCliParams } from './helpers/cli-params.helper';
-import { Docs } from './models';
 import * as ts from 'typescript';
-import { trySafe } from './helpers/try-safe.helper';
+import { CypressTestsGenerator } from './generators/cypress-tests.generator';
+import { DocsHtmlGenerator } from './generators/docs-html.generator';
+import { CliParams, parseCliParams } from './helpers/cli-params.helper';
 import { Log } from './helpers/log.helper';
+import { trySafe } from './helpers/try-safe.helper';
+import { Docs } from './models';
 
 trySafe(
   () => run(),
