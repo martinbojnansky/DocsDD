@@ -24,9 +24,6 @@ jobs:
         run: |
           npm ci
           npm run build:prod
-      - name: Link 'docsdd' command
-        run: |
-          npm link
       - name: Test Samples
         working-directory: samples
         run: |

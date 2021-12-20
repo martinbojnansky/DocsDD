@@ -6,9 +6,9 @@
   "author": "Martin Bojnansky",
   "license": "",
   "scripts": {
-    "build-docs": "docsdd docs --input=01_getting-started/docs.ts --output=01_getting-started//docs.html",
+    "build-docs": "node ../cli/dist/cli.js docs --input=01_getting-started/docs.ts --output=01_getting-started//docs.html",
     "build-docs:watch": "npm run build-docs -- --watch",
-    "build-tests": "docsdd tests --target=cypress --input=01_getting-started/docs.ts --output=cypress/integration/01_getting-started/_tests.ts",
+    "build-tests": "node ../cli/dist/cli.js tests --target=cypress --input=01_getting-started/docs.ts --output=cypress/integration/01_getting-started/_tests.ts",
     "build-tests:watch": "npm run build-tests -- --watch",
     "tests": "cypress open",
     "tests:headless": "npm run build-tests && cypress run"
