@@ -7,7 +7,6 @@ export class CypressTestsGenerator implements DocsGenerator<Docs> {
     const writer = new StringWriter();
 
     this.generateCommon(docs, writer);
-    writer.appendLine();
     docs.useCases.forEach((useCase) => {
       writer.appendLine();
       this.generateUseCase(useCase, writer);
