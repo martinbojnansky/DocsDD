@@ -11,7 +11,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  samples:
+  verify-samples:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -19,9 +19,13 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
-      - run: cd cli
-      - run: npm ci
-      - run: npm run build:prod
-      - run: cd samples
-      - run: npm ci
-      - run: npm run test:headless
+      - name: build-cli
+        working-directory: cli
+        run: |
+          npm ci
+          npm run build:prod
+      - name: test-samples
+        working-directory: samples
+        run: |
+          npm ci
+          npm run tests:headleass
