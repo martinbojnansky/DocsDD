@@ -1,6 +1,6 @@
-import { functionName } from "../helpers/naming.helper";
-import { StringWriter } from "../helpers/string.helper";
-import { Docs, DocsGenerator, UseCase } from "../models";
+import { functionName } from '../helpers/naming.helper';
+import { StringWriter } from '../helpers/string.helper';
+import { Docs, DocsGenerator, UseCase } from '../models';
 
 export class CypressTestsGenerator implements DocsGenerator<Docs> {
   generate(docs: Docs): string {

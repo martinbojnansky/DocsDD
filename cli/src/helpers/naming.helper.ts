@@ -13,9 +13,9 @@ const name = (
   onMatch: (match: string, index: number) => string
 ): string => {
   return text
-    .replace(/[^a-zA-Z0-9]/g, " ")
+    .replace(/[^a-zA-Z0-9]/g, ' ')
     .replace(/(?:^\w|[A-Z]|\b\w|\s+)/g, function (match, index) {
-      if (+match === 0) return "";
+      if (+match === 0) return '';
       return onMatch(match, index);
     });
 };

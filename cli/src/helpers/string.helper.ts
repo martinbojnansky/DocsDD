@@ -1,5 +1,5 @@
 export class StringWriter {
-  private text = "";
+  private text = '';
   private indent = 0;
 
   increaseIndent(times: number = 1) {
@@ -13,12 +13,12 @@ export class StringWriter {
 
   append(text: string) {
     for (let i = 0; i < this.indent; i++) {
-      this.text += " ";
+      this.text += ' ';
     }
     this.text += text;
   }
 
-  appendLine(text: string = "") {
+  appendLine(text: string = '') {
     this.append(`${text}\n`);
   }
 

@@ -20,9 +20,9 @@ export interface UseCaseParticipant {
   id: string;
 }
 
-export type UseCaseStepArrowType = "->>" | "-->>";
+export type UseCaseStepArrowType = '->>' | '-->>';
 
-export type UseCaseStepType = "message" | "request" | "response";
+export type UseCaseStepType = 'message' | 'request' | 'response';
 
 export interface UseCaseStep {
   id: string;
@@ -33,7 +33,7 @@ export interface UseCaseStep {
 }
 
 export interface UseCaseMessageStep<T = any> extends UseCaseStep {
-  type: "message";
+  type: 'message';
   from: UseCaseParticipant;
   to: UseCaseParticipant;
   message: T;
@@ -42,25 +42,25 @@ export interface UseCaseMessageStep<T = any> extends UseCaseStep {
 export interface UseCaseRequestStep<
   T extends UseCaseRequestStepRequest = UseCaseRequestStepRequest
 > extends UseCaseStep {
-  type: "request";
+  type: 'request';
   from: UseCaseParticipant;
   to: UseCaseParticipant;
-  arrow: "->>";
+  arrow: '->>';
   request: T;
 }
 
 export interface UseCaseResponseStep<
   T extends UseCaseResponseStepResponse = UseCaseResponseStepResponse
 > extends UseCaseStep {
-  type: "response";
+  type: 'response';
   from: UseCaseParticipant;
   to: UseCaseParticipant;
-  arrow: "-->>";
+  arrow: '-->>';
   response: T;
 }
 
 export interface UseCaseRequestStepRequest<T = any> {
-  method: "get" | "post" | "update" | "patch" | "delete";
+  method: 'get' | 'post' | 'update' | 'patch' | 'delete';
   url: string;
   body?: T;
   headers?: { [key: string]: string };

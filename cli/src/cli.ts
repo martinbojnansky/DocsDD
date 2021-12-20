@@ -1,11 +1,11 @@
-import * as fs from "fs";
-import { DocsHtmlGenerator } from "./generators/docs-html.generator";
-import { CypressTestsGenerator } from "./generators/cypress-tests.generator";
-import { CliParams, parseCliParams } from "./helpers/cli-params.helper";
-import { Docs } from "./models";
-import * as ts from "typescript";
-import { trySafe } from "./helpers/try-safe.helper";
-import { Log } from "./helpers/log.helper";
+import * as fs from 'fs';
+import { DocsHtmlGenerator } from './generators/docs-html.generator';
+import { CypressTestsGenerator } from './generators/cypress-tests.generator';
+import { CliParams, parseCliParams } from './helpers/cli-params.helper';
+import { Docs } from './models';
+import * as ts from 'typescript';
+import { trySafe } from './helpers/try-safe.helper';
+import { Log } from './helpers/log.helper';
 
 trySafe(
   () => run(),
@@ -13,17 +13,17 @@ trySafe(
 );
 
 function run() {
-  const command = process.argv[2] as "docs" | "tests" | "help";
+  const command = process.argv[2] as 'docs' | 'tests' | 'help';
   const params = parseCliParams(process.argv.slice(3));
 
   switch (command) {
-    case "docs":
+    case 'docs':
       watch(params, () => generateDocs(params));
       break;
-    case "tests":
+    case 'tests':
       watch(params, () => generateTests(params));
       break;
-    case "help":
+    case 'help':
       help();
       break;
     default:
@@ -57,11 +57,11 @@ function getDocs(params: CliParams): Docs {
     .readFileSync(`${process.cwd()}/${params.input}`)
     .toString();
 
-  if (params.input.endsWith(".ts")) {
+  if (params.input.endsWith('.ts')) {
     return eval(ts.transpileModule(fileContent, {}).outputText);
-  } else if (params.input.endsWith(".js")) {
+  } else if (params.input.endsWith('.js')) {
     return eval(fileContent);
-  } else if (params.input.endsWith(".json")) {
+  } else if (params.input.endsWith('.json')) {
     return JSON.parse(fileContent) as Docs;
   }
 }
@@ -78,7 +78,7 @@ function generateTests(params: CliParams) {
   const docs = getDocs(params);
   let tests: string;
   switch (params.target) {
-    case "cypress":
+    case 'cypress':
       tests = new CypressTestsGenerator().generate(docs);
       break;
     default:
@@ -95,5 +95,5 @@ function help() {
 }
 
 function unhandledException<T>(ex: T) {
-  Log.error("Unhandled exception occured.");
+  Log.error('Unhandled exception occured.');
 }

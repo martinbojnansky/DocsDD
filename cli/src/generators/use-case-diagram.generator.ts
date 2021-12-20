@@ -1,18 +1,18 @@
-import { Log } from "../helpers/log.helper";
-import { StringWriter } from "../helpers/string.helper";
+import { Log } from '../helpers/log.helper';
+import { StringWriter } from '../helpers/string.helper';
 import {
   UseCase,
   UseCaseMessageStep,
   UseCaseGenerator,
   UseCaseRequestStep,
   UseCaseResponseStep,
-} from "../models";
+} from '../models';
 
 export class UseCaseDiagramGenerator implements UseCaseGenerator<UseCase> {
   generate(useCase: UseCase): string {
     const writer = new StringWriter();
 
-    writer.appendLine("sequenceDiagram");
+    writer.appendLine('sequenceDiagram');
     writer.increaseIndent();
 
     useCase.participants.forEach((participant) => {
@@ -23,20 +23,20 @@ export class UseCaseDiagramGenerator implements UseCaseGenerator<UseCase> {
 
     useCase.steps.forEach((step) => {
       switch (step.type) {
-        case "message":
-        case "request":
-        case "response":
+        case 'message':
+        case 'request':
+        case 'response':
           const messageStep = step as
             | UseCaseMessageStep
             | UseCaseRequestStep
             | UseCaseResponseStep;
           writer.appendLine(
             `${messageStep.from.id}${messageStep.arrow}${
-              step.type === "request"
-                ? "+"
-                : step.type === "response"
-                ? "-"
-                : ""
+              step.type === 'request'
+                ? '+'
+                : step.type === 'response'
+                ? '-'
+                : ''
             }${messageStep.to.id}: ${messageStep.id}`
           );
           if (messageStep.note) {
