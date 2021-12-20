@@ -7,11 +7,11 @@
   "license": "",
   "scripts": {
     "build-docs": "node ../cli/dist/cli.js docs --input=01_getting-started/docs.ts --output=01_getting-started//docs.html",
-    "watch-docs": "npm run build-docs -- --watch",
-    "build-docs-tests": "node ../cli/dist/cli.js tests --target=cypress --input=01_getting-started/docs.ts --output=cypress/integration/01_getting-started/_tests.ts",
-    "watch-docs-tests": "npm run build-docs-tests -- --watch",
-    "test": "cypress open",
-    "test:prod": "cypress run"
+    "build-docs:watch": "npm run build-docs -- --watch",
+    "build-tests": "node ../cli/dist/cli.js tests --target=cypress --input=01_getting-started/docs.ts --output=cypress/integration/01_getting-started/_tests.ts",
+    "build-tests:watch": "npm run build-docs-tests -- --watch",
+    "tests": "cypress open",
+    "tests:headless": "npm run build-tests && cypress run"
   },
   "devDependencies": {
     "cypress": "^9.1.1",
