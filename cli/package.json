@@ -13,9 +13,7 @@
   "bin": {
     "docsdd": "dist/cli.js"
   },
-  "dependencies": {
-    "mermaid": "^8.13.6"
-  },
+  "dependencies": {},
   "devDependencies": {
     "@types/mermaid": "^8.2.7",
     "prettier": "^2.5.1",
