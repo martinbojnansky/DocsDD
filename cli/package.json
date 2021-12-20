@@ -1,6 +1,6 @@
 {
   "name": "docsdd",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "CLI for automated UML and tests generation using Typescript definition.",
   "main": "cli.js",
   "author": "Martin Bojnansky",
