@@ -1,16 +1,16 @@
-/* See: https://www.youtube.com/watch?v=e1KJ47tyCso*/
 import * as fs from "fs";
 import { DocsHtmlGenerator } from "./generators/docs-html.generator";
 import { CypressTestsGenerator } from "./generators/cypress-tests.generator";
 import { CliParams, parseCliParams } from "./helpers/cli-params.helper";
-import { Docs, UseCaseGenerator } from "./models";
+import { Docs } from "./models";
 import * as ts from "typescript";
+import { trySafe } from "./helpers/try-safe.helper";
+import { Log } from "./helpers/log.helper";
 
-try {
-  run();
-} catch (e) {
-  unhandledException();
-}
+trySafe(
+  () => run(),
+  (e) => unhandledException(e)
+);
 
 function run() {
   const command = process.argv[2] as "docs" | "tests" | "help";
@@ -27,7 +27,7 @@ function run() {
       help();
       break;
     default:
-      console.error(`Command '${command}' not recognized.`);
+      Log.error(`Command '${command}' not recognized.`);
       help();
       break;
   }
@@ -37,19 +37,17 @@ function watch(
   params: CliParams,
   onChange: (event?: fs.WatchEventType, fileName?: string) => void
 ) {
-  try {
-    onChange();
-  } catch {
-    unhandledException();
-  }
+  trySafe(
+    () => onChange(),
+    (e) => unhandledException(e)
+  );
 
   if (params.watch) {
     fs.watch(`${process.cwd()}/${params.input}`, (event, filename) => {
-      try {
-        onChange(event, filename);
-      } catch (e) {
-        unhandledException();
-      }
+      trySafe(
+        () => onChange(event, filename),
+        (e) => unhandledException(e)
+      );
     });
   }
 }
@@ -73,9 +71,7 @@ function generateDocs(params: CliParams) {
   const htmlDocs = new DocsHtmlGenerator().generate(docs);
   const outputPath = `${process.cwd()}/${params.output}`;
   fs.writeFileSync(outputPath, htmlDocs);
-  console.log(
-    `${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}: '${outputPath}' sucessfully generated.`
-  );
+  Log.success(`'${outputPath}' sucessfully generated.`);
 }
 
 function generateTests(params: CliParams) {
@@ -86,22 +82,18 @@ function generateTests(params: CliParams) {
       tests = new CypressTestsGenerator().generate(docs);
       break;
     default:
-      console.error(`Target '${params.target}' not supported.`);
+      Log.error(`Target '${params.target}' not supported.`);
       break;
   }
   const outputPath = `${process.cwd()}/${params.output}`;
   fs.writeFileSync(outputPath, tests);
-  console.log(
-    `${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}: '${outputPath}' sucessfully generated.`
-  );
+  Log.success(`'${outputPath}' generated.`);
 }
 
 function help() {
   // TODO
 }
 
-function unhandledException() {
-  console.error(
-    `${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}: Unhandled exception occured.`
-  );
+function unhandledException<T>(ex: T) {
+  Log.error("Unhandled exception occured.");
 }

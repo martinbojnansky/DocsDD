@@ -8,7 +8,8 @@
   "scripts": {
     "build-docs": "node ../../cli/dist/cli.js docs --input=documentation/docs.ts --output=documentation/docs.html",
     "watch-docs": "npm run build-docs -- --watch",
-    "build-docs-tests": "node ../../cli/dist/cli.js tests --target=cypress --input=documentation/docs.ts --output=cypress/integration/_abstracts.ts",
+    "build-docs-tests": "node ../../cli/dist/cli.js tests --target=cypress --input=documentation/docs.ts --output=cypress/integration/_tests.ts",
+    "watch-docs-tests": "npm run build-docs-tests -- --watch",
     "test": "cypress open",
     "test:prod": "cypress run"
   },
