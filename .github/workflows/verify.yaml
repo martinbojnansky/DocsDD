@@ -25,7 +25,6 @@ jobs:
       - run: npm ci
       - run: npm run build:prod
   test-samples:
-    build-cli:
     runs-on: ubuntu-latest
     defaults:
       run:
