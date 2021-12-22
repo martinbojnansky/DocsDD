@@ -1,28 +1,33 @@
-import { todoHappyTestSuite } from './_tests';
+import { todoHappyUseCase } from './_tests';
 
-todoHappyTestSuite
+todoHappyUseCase
+  // .skip()
+  .steps((steps) => {
+    steps.visitTodosView;
+    // .only()
+  })
   .before(() => console.log('before'))
   .after(() => console.log('after'))
   .beforeEach(() => console.log('before each'))
   .afterEach(() => console.log('after each'))
-  .override((tests) => {
-    tests.visitTodosView.override(() => {
+  .steps((steps) => {
+    steps.visitTodosView.override((step) => {
       cy.visit('../01_getting-started/index.html');
     });
 
-    tests.displayTodosEmpty.override((step) => {
+    steps.displayTodosEmpty.override((step) => {
       cy.get('[data-tid="todos-view__title"]').should('contain.text', 'todos');
       cy.get('[data-tid="todos-view__input"]');
       cy.get('[data-tid="todos-view__item"]').should('have.length', 0);
     });
 
-    tests.addTodoFirst.override((step) => {
+    steps.addTodoFirst.override((step) => {
       cy.get('[data-tid="todos-view__input"]').type(
         `${step.message.title}{enter}`
       );
     });
 
-    tests.displayTodosFirst.override((step) => {
+    steps.displayTodosFirst.override((step) => {
       const item = cy.get('[data-tid="todos-view__item"]').eq(0);
       item
         .get('[data-tid="todos-view__item__toggle"]')
@@ -32,18 +37,42 @@ todoHappyTestSuite
         .should('contain.text', step.message.title);
     });
 
-    tests.completeTodoFirst.override((step) => {
+    steps.completeTodoFirst.override((step) => {
       cy.get('[data-tid="todos-view__item"]')
         .eq(0)
         .get('[data-tid="todos-view__item__toggle"]')
         .click();
     });
 
-    tests.completedTodoFirst.override((step) => {
+    steps.completedTodoFirst.override((step) => {
       cy.get('[data-tid="todos-view__item"]')
         .eq(0)
         .get('[data-tid="todos-view__item__toggle"]')
         .should('be.checked');
     });
+  })
+  .run();
+
+todoHappyUseCase
+  // .skip()
+  .before(() => console.log('before use case 1'))
+  .after(() => console.log('after use case 1'))
+  .beforeEach(() => console.log('before each step of use case 1'))
+  .afterEach(() => console.log('after each step of use case 1'))
+  .steps((steps) => {
+    steps.visitTodosView
+      //.only()
+      .before(() => {
+        console.log('before step 1');
+      })
+      .after(() => {
+        console.log('after step 1');
+      })
+      .instructions((instructions) => {
+        instructions.visitIndex
+          .before(() => console.log('before instruction 1'))
+          .after(() => console.log('after instruction 1'))
+          .override((i) => console.log('override instruction 1'));
+      });
   })
   .run();

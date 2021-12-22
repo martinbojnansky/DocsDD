@@ -1,12 +1,6 @@
 import { Log } from '../helpers/log.helper';
 import { StringWriter } from '../helpers/string.helper';
-import {
-  UseCase,
-  UseCaseGenerator,
-  UseCaseMessageStep,
-  UseCaseRequestStep,
-  UseCaseResponseStep,
-} from '../models';
+import { MessageStep, Step, UseCase, UseCaseGenerator } from '../models';
 
 export class UseCaseDiagramGenerator implements UseCaseGenerator<UseCase> {
   generate(useCase: UseCase): string {
@@ -15,42 +9,52 @@ export class UseCaseDiagramGenerator implements UseCaseGenerator<UseCase> {
     writer.appendLine('sequenceDiagram');
     writer.increaseIndent();
 
+    this.writeParticipants(writer, useCase);
+    writer.appendLine();
+
+    this.writeSteps(writer, useCase);
+
+    return writer.getText();
+  }
+
+  protected writeParticipants(writer: StringWriter, useCase: UseCase) {
     useCase.participants.forEach((participant) => {
       writer.appendLine(`participant ${participant.id}`);
     });
+  }
 
-    writer.appendLine();
-
+  protected writeSteps(writer: StringWriter, useCase: UseCase) {
     useCase.steps.forEach((step) => {
       switch (step.type) {
         case 'message':
-        case 'request':
-        case 'response':
-          const messageStep = step as
-            | UseCaseMessageStep
-            | UseCaseRequestStep
-            | UseCaseResponseStep;
-          writer.appendLine(
-            `${messageStep.from.id}${messageStep.arrow}${
-              step.type === 'request'
-                ? '+'
-                : step.type === 'response'
-                ? '-'
-                : ''
-            }${messageStep.to.id}: ${messageStep.id}`
-          );
-          if (messageStep.note) {
-            writer.appendLine(
-              `Note over ${messageStep.from.id},${messageStep.to.id}: ${messageStep.note}`
-            );
-          }
+          this.writeMessageStep(writer, useCase, step as MessageStep);
           break;
         default:
           Log.warn(`Unsupported step type '${step.type}'.`);
           break;
       }
+      this.writeStepInstructions(writer, useCase, step);
     });
+  }
 
-    return writer.getText();
+  protected writeStepInstructions(
+    writer: StringWriter,
+    useCase: UseCase,
+    step: Step
+  ) {
+    // TODO
+  }
+
+  protected writeMessageStep(
+    writer: StringWriter,
+    useCase: UseCase,
+    step: MessageStep
+  ) {
+    writer.appendLine(`${step.from.id}${step.arrow}${step.to.id}: ${step.id}`);
+    if (step.note) {
+      writer.appendLine(
+        `Note over ${step.from.id},${step.to.id}: ${step.note}`
+      );
+    }
   }
 }

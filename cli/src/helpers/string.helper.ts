@@ -1,6 +1,12 @@
+import * as fs from 'fs';
+
 export class StringWriter {
-  private text = '';
-  private indent = 0;
+  private text: string;
+  private indent: number;
+
+  constructor() {
+    this.reset();
+  }
 
   increaseIndent(times: number = 1) {
     this.indent += 2 * times;
@@ -28,6 +34,15 @@ export class StringWriter {
     body();
     this.decreaseIndent();
     this.appendLine(end);
+  }
+
+  appendFile(path: fs.PathOrFileDescriptor) {
+    this.append(fs.readFileSync(path).toString());
+  }
+
+  reset() {
+    this.text = '';
+    this.indent = 0;
   }
 
   getText(): string {

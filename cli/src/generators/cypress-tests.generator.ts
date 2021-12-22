@@ -1,6 +1,7 @@
+import * as path from 'path';
 import { functionName } from '../helpers/naming.helper';
 import { StringWriter } from '../helpers/string.helper';
-import { Docs, DocsGenerator, UseCase } from '../models';
+import { Docs, DocsGenerator, Step, UseCase } from '../models';
 
 export class CypressTestsGenerator implements DocsGenerator<Docs> {
   generate(docs: Docs): string {
@@ -9,148 +10,67 @@ export class CypressTestsGenerator implements DocsGenerator<Docs> {
     this.generateCommon(docs, writer);
     docs.useCases.forEach((useCase) => {
       writer.appendLine();
-      this.generateUseCase(useCase, writer);
+      this.writeUseCase(writer, useCase);
     });
 
     return writer.getText();
   }
 
-  protected generateUseCase(useCase: UseCase, writer: StringWriter) {
+  protected writeUseCase(writer: StringWriter, useCase: UseCase) {
     writer.appendBlock(
-      `export const ${functionName(useCase.id)}TestSuite = new TestSuite('${
+      `export const ${functionName(useCase.id)}UseCase = new CyUseCase('${
         useCase.id
       }', {`,
       `});`,
+      () => this.writeSteps(writer, useCase)
+    );
+  }
+
+  protected writeSteps(writer: StringWriter, useCase: UseCase) {
+    useCase.steps
+      .filter((step) => !step.skipTest)
+      .forEach((step) => this.writeStep(writer, useCase, step));
+  }
+
+  protected writeStep(writer: StringWriter, useCase: UseCase, step: Step) {
+    writer.appendBlock(
+      `${functionName(step.id)}: new CyStep('${step.id}',`,
+      '),',
       () => {
-        useCase.steps
-          .filter((step) => !step.skipTest)
-          .forEach((step) => {
-            writer.appendLine(
-              `${functionName(step.id)}: new TestFunction('${
-                step.id
-              }', ${JSON.stringify(step)}),`
-            );
-          });
+        const stepWithoutInstructions = {
+          ...step,
+        };
+        delete stepWithoutInstructions.instructions;
+        writer.appendLine(`${JSON.stringify(stepWithoutInstructions)},`);
+        this.writeStepInstructions(writer, useCase, step);
       }
     );
   }
 
-  protected generateCommon(docs: Docs, writer: StringWriter) {
-    writer.append(`class TestFunction<T = any> {
-  protected _skip = false;
-  protected _only = false;
-  protected _config = {} as Cypress.TestConfigOverrides;
-
-  constructor(
-    protected readonly _title: string,
-    protected readonly _step: T,
-    protected _override?: (step: T) => void
-  ) {}
-
-  skip(): TestFunction<T> {
-    this._skip = true;
-    return this;
-  }
-
-  only(): TestFunction<T> {
-    this._only = true;
-    return this;
-  }
-
-  config(config: Cypress.TestConfigOverrides): TestFunction<T> {
-    this._config = config;
-    return this;
-  }
-
-  override(fn: (step: T) => void): TestFunction<T> {
-    this._override = fn;
-    return this;
-  }
-
-  _run(): void {
-    if (!this._override || this._skip) {
-      it.skip(this._title);
-    } else if (this._only) {
-      it.only(this._title);
-    } else {
-      it(this._title, this._config, () => this._override(this._step));
-    }
-  }
-}
-
-class TestSuite<
-  T extends { [id in keyof T]: TestFunction } = { [id: string]: TestFunction }
-> {
-  protected _skip = false;
-  protected _only = false;
-  protected _before: () => void = () => {};
-  protected _beforeEach: () => void = () => {};
-  protected _after: () => void = () => {};
-  protected _afterEach: () => void = () => {};
-
-  constructor(
-    protected readonly _title: string,
-    protected readonly _tests: T
-  ) {}
-
-  skip(): TestSuite<T> {
-    this._skip = true;
-    return this;
-  }
-
-  only(): TestSuite<T> {
-    this._only = true;
-    return this;
-  }
-
-  before(fn: () => void): TestSuite<T> {
-    this._before = fn;
-    return this;
-  }
-
-  after(fn: () => void): TestSuite<T> {
-    this._after = fn;
-    return this;
-  }
-
-  beforeEach(fn: () => void): TestSuite<T> {
-    this._beforeEach = fn;
-    return this;
-  }
-
-  afterEach(fn: () => void): TestSuite<T> {
-    this._afterEach = fn;
-    return this;
-  }
-
-  override(fn: (tests: T) => void): TestSuite<T> {
-    fn(this._tests);
-    return this;
-  }
-
-  run(): void {
-    this._before.apply(this);
-
-    const args: [string, () => void] = [this._title, () => this.runTests()];
-    if (this._skip) {
-      describe.skip(...args);
-    } else if (this._only) {
-      describe.only(...args);
-    } else {
-      describe(...args);
+  protected writeStepInstructions(
+    writer: StringWriter,
+    useCase: UseCase,
+    step: Step
+  ) {
+    if (!step.instructions?.length) {
+      writer.appendLine('{},');
+      return;
     }
 
-    this._after.apply(this);
-  }
-
-  protected runTests() {
-    Object.keys(this._tests).forEach((testId) => {
-      this._beforeEach.apply(this);
-      (this._tests[testId] as TestFunction)._run();
-      this._afterEach.apply(this);
+    writer.appendBlock('{', '}', () => {
+      step.instructions?.forEach((instruction) => {
+        writer.appendLine(
+          `${functionName(instruction.id)}: new CyInstruction('${
+            instruction.id
+          }', ${JSON.stringify(instruction)}),`
+        );
+      });
     });
   }
-}
-`);
+
+  protected generateCommon(docs: Docs, writer: StringWriter) {
+    writer.appendFile(
+      path.resolve(__dirname, 'templates/cypress-tests.template')
+    );
   }
 }

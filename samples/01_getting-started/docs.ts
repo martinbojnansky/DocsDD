@@ -1,16 +1,19 @@
 import {
   Docs,
+  MessageStep,
+  Participant,
   UseCase,
-  UseCaseMessageStep,
-  UseCaseParticipant,
+  VisitInstruction,
 } from '../../cli/src/models';
 
-const participants: { [key: string]: UseCaseParticipant } = {
+const participants: { [key: string]: Participant } = {
   user: {
     id: 'user',
+    type: 'actor',
   },
   frontend: {
     id: 'frontend',
+    type: 'participant',
   },
 };
 
@@ -19,15 +22,22 @@ const todoHappyUseCase: UseCase = {
   description: 'Basic usage of todos management.',
   participants: Object.keys(participants).map((key) => participants[key]),
   steps: [
-    <UseCaseMessageStep>{
+    <MessageStep>{
       id: 'visit-todos-view',
       type: 'message',
       from: participants.user,
       to: participants.frontend,
       arrow: '->>',
+      instructions: [
+        <VisitInstruction>{
+          id: 'visit-index',
+          should: 'visit',
+          url: '../01_getting-started/index.html',
+        },
+      ],
     },
 
-    <UseCaseMessageStep>{
+    <MessageStep>{
       id: 'display-todos--empty',
       type: 'message',
       from: participants.frontend,
@@ -35,7 +45,7 @@ const todoHappyUseCase: UseCase = {
       arrow: '-->>',
     },
 
-    <UseCaseMessageStep>{
+    <MessageStep>{
       id: 'add-todo--first',
       type: 'message',
       from: participants.user,
@@ -46,7 +56,7 @@ const todoHappyUseCase: UseCase = {
       },
     },
 
-    <UseCaseMessageStep>{
+    <MessageStep>{
       id: 'display-todos--first',
       type: 'message',
       from: participants.frontend,
@@ -57,7 +67,7 @@ const todoHappyUseCase: UseCase = {
       },
     },
 
-    <UseCaseMessageStep>{
+    <MessageStep>{
       id: 'complete-todo--first',
       type: 'message',
       from: participants.user,
@@ -65,7 +75,7 @@ const todoHappyUseCase: UseCase = {
       arrow: '->>',
     },
 
-    <UseCaseMessageStep>{
+    <MessageStep>{
       id: 'completed-todo--first',
       type: 'message',
       from: participants.frontend,
