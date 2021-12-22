@@ -33,11 +33,11 @@ export class UseCaseDiagramGenerator implements UseCaseGenerator<UseCase> {
           Log.warn(`Unsupported step type '${step.type}'.`);
           break;
       }
-      this.writeStepInstructions(writer, useCase, step);
+      this.writeStepCriteria(writer, useCase, step);
     });
   }
 
-  protected writeStepInstructions(
+  protected writeStepCriteria(
     writer: StringWriter,
     useCase: UseCase,
     step: Step

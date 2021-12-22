@@ -1,19 +1,31 @@
 import * as path from 'path';
 import { functionName } from '../helpers/naming.helper';
 import { StringWriter } from '../helpers/string.helper';
-import { Docs, DocsGenerator, Step, UseCase } from '../models';
+import {
+  CypressCriterium,
+  Docs,
+  DocsGenerator,
+  Step,
+  UseCase,
+} from '../models';
 
 export class CypressTestsGenerator implements DocsGenerator<Docs> {
   generate(docs: Docs): string {
     const writer = new StringWriter();
 
-    this.generateCommon(docs, writer);
+    this.writeTemplate(docs, writer);
     docs.useCases.forEach((useCase) => {
       writer.appendLine();
       this.writeUseCase(writer, useCase);
     });
 
     return writer.getText();
+  }
+
+  protected writeTemplate(docs: Docs, writer: StringWriter) {
+    writer.appendFile(
+      path.resolve(__dirname, 'templates/cypress-tests.template')
+    );
   }
 
   protected writeUseCase(writer: StringWriter, useCase: UseCase) {
@@ -37,40 +49,44 @@ export class CypressTestsGenerator implements DocsGenerator<Docs> {
       `${functionName(step.id)}: new CyStep('${step.id}',`,
       '),',
       () => {
-        const stepWithoutInstructions = {
+        const stepWithoutCriteria = {
           ...step,
         };
-        delete stepWithoutInstructions.instructions;
-        writer.appendLine(`${JSON.stringify(stepWithoutInstructions)},`);
-        this.writeStepInstructions(writer, useCase, step);
+        delete stepWithoutCriteria.criteria;
+        writer.appendLine(`${JSON.stringify(stepWithoutCriteria)},`);
+        this.writeStepCriteria(writer, useCase, step);
       }
     );
   }
 
-  protected writeStepInstructions(
+  protected writeStepCriteria(
     writer: StringWriter,
     useCase: UseCase,
     step: Step
   ) {
-    if (!step.instructions?.length) {
+    if (!step.criteria?.length) {
       writer.appendLine('{},');
       return;
     }
 
     writer.appendBlock('{', '}', () => {
-      step.instructions?.forEach((instruction) => {
+      step.criteria?.forEach((criterium) => {
         writer.appendLine(
-          `${functionName(instruction.id)}: new CyInstruction('${
-            instruction.id
-          }', ${JSON.stringify(instruction)}),`
+          `${functionName(criterium.should)}: new CyCriterium('${
+            criterium.should
+          }',`
         );
+        writer.appendLine(`${JSON.stringify(criterium)},`);
+
+        if (criterium.type === 'cypress') {
+          const cypressCriterium = criterium as CypressCriterium;
+          writer.appendLine(
+            `${cypressCriterium.code
+              ?.toString()
+              .replace('function () ', '(criterium) => ')}),`
+          );
+        }
       });
     });
-  }
-
-  protected generateCommon(docs: Docs, writer: StringWriter) {
-    writer.appendFile(
-      path.resolve(__dirname, 'templates/cypress-tests.template')
-    );
   }
 }

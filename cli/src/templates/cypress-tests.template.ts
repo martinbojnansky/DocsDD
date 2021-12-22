@@ -1,31 +1,31 @@
-class CyInstruction<TInstruction = any> {
+class CyCriterium<TCriterium = any> {
   protected _before: () => void = () => {};
   protected _after: () => void = () => {};
 
   constructor(
     protected readonly _title: string,
-    protected readonly _instruction: TInstruction,
-    protected _override?: (instruction: TInstruction) => void
+    protected readonly _criterium: TCriterium,
+    protected _override?: (criterium: TCriterium) => void
   ) {}
 
-  before(fn: () => void): CyInstruction<TInstruction> {
+  before(fn: () => void): CyCriterium<TCriterium> {
     this._before = fn;
     return this;
   }
 
-  after(fn: () => void): CyInstruction<TInstruction> {
+  after(fn: () => void): CyCriterium<TCriterium> {
     this._after = fn;
     return this;
   }
 
-  override(fn: (step: TInstruction) => void) {
+  override(fn: (step: TCriterium) => void) {
     this._override = fn;
   }
 
   _run(): void {
     this._before?.apply(this);
     if (this._override) {
-      this._override.apply(this, [this._instruction]);
+      this._override.apply(this, [this._criterium]);
     }
     this._after?.apply(this);
   }
@@ -33,8 +33,8 @@ class CyInstruction<TInstruction = any> {
 
 class CyStep<
   TStep = any,
-  TInstructions extends { [id in keyof TInstructions]: CyInstruction } = {
-    [id: string]: CyInstruction;
+  TCriteria extends { [id in keyof TCriteria]: CyCriterium } = {
+    [id: string]: CyCriterium;
   }
 > {
   protected _skip = false;
@@ -47,7 +47,7 @@ class CyStep<
   constructor(
     protected readonly _title: string,
     protected readonly _step: TStep,
-    protected _instructions?: TInstructions,
+    protected _criteria?: TCriteria,
     protected _override?: (step: TStep) => void
   ) {}
 
@@ -77,8 +77,8 @@ class CyStep<
     return this;
   }
 
-  instructions(fn: (instructions: TInstructions) => void): CyStep<TStep> {
-    fn(this._instructions);
+  criteria(fn: (criteria: TCriteria) => void): CyStep<TStep> {
+    fn(this._criteria);
     return this;
   }
 
@@ -91,7 +91,7 @@ class CyStep<
     const args: [string, Cypress.TestConfigOverrides, () => void] = [
       this._title,
       this._config,
-      () => this.runInstructions(),
+      () => this.runCriteria(),
     ];
     if (this._skip) {
       // @ts-ignore
@@ -105,13 +105,13 @@ class CyStep<
     }
   }
 
-  protected runInstructions() {
+  protected runCriteria() {
     this._before?.apply(this, [this._step]);
     if (this._override) {
       this._override.apply(this, [this._step]);
     } else {
-      Object.keys(this._instructions).forEach((instructionId) => {
-        (this._instructions[instructionId] as CyInstruction)._run();
+      Object.keys(this._criteria).forEach((criteriumId) => {
+        (this._criteria[criteriumId] as CyCriterium)._run();
       });
     }
     this._after?.apply(this, [this._step]);

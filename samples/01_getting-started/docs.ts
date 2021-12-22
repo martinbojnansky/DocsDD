@@ -1,9 +1,9 @@
 import {
+  CypressCriterium,
   Docs,
   MessageStep,
   Participant,
   UseCase,
-  VisitInstruction,
 } from '../../cli/src/models';
 
 const participants: { [key: string]: Participant } = {
@@ -28,11 +28,11 @@ const todoHappyUseCase: UseCase = {
       from: participants.user,
       to: participants.frontend,
       arrow: '->>',
-      instructions: [
-        <VisitInstruction>{
-          id: 'visit-index',
-          should: 'visit',
-          url: '../01_getting-started/index.html',
+      criteria: [
+        <CypressCriterium>{
+          type: 'cypress',
+          should: 'visit-index',
+          code: () => cy.visit('../01_getting-started/index.html'),
         },
       ],
     },
@@ -43,6 +43,28 @@ const todoHappyUseCase: UseCase = {
       from: participants.frontend,
       to: participants.user,
       arrow: '-->>',
+      criteria: [
+        <CypressCriterium>{
+          type: 'cypress',
+          should: 'display-title',
+          code: () =>
+            cy
+              .get('[data-tid="todos-view__title"]')
+              .should('contain.text', 'todos'),
+        },
+        <CypressCriterium>{
+          type: 'cypress',
+          should: 'have-empty-input',
+          code: () =>
+            cy.get('[data-tid="todos-view__input"]').should('be.empty'),
+        },
+        <CypressCriterium>{
+          type: 'cypress',
+          should: 'have-no-todos',
+          code: () =>
+            cy.get('[data-tid="todos-view__item"]').should('have.length', 0),
+        },
+      ],
     },
 
     <MessageStep>{
@@ -54,6 +76,16 @@ const todoHappyUseCase: UseCase = {
       message: {
         title: 'Walk the dog!',
       },
+      criteria: [
+        <CypressCriterium>{
+          type: 'cypress',
+          should: 'submit-todo',
+          code: () =>
+            cy
+              .get('[data-tid="todos-view__input"]')
+              .type(`Walk the dog!}{enter}`),
+        },
+      ],
     },
 
     <MessageStep>{
