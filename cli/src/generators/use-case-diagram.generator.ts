@@ -8,6 +8,7 @@ export class UseCaseDiagramGenerator implements UseCaseGenerator<UseCase> {
 
     writer.appendLine('sequenceDiagram');
     writer.increaseIndent();
+    writer.appendLine('autonumber');
 
     this.writeParticipants(writer, useCase);
     writer.appendLine();
@@ -19,21 +20,27 @@ export class UseCaseDiagramGenerator implements UseCaseGenerator<UseCase> {
 
   protected writeParticipants(writer: StringWriter, useCase: UseCase) {
     useCase.participants.forEach((participant) => {
-      writer.appendLine(`participant ${participant.id}`);
+      writer.appendLine(`${participant.type} ${participant.id}`);
     });
   }
 
   protected writeSteps(writer: StringWriter, useCase: UseCase) {
-    useCase.steps.forEach((step) => {
+    useCase.steps.forEach((step, index) => {
+      writer.appendLine(
+        `rect rgb(${index % 2 === 0 ? '244, 244, 244' : '233, 237, 244'})`
+      );
+
       switch (step.type) {
         case 'message':
-          this.writeMessageStep(writer, useCase, step as MessageStep);
+          this.writeStep(writer, useCase, step as MessageStep);
           break;
         default:
           Log.warn(`Unsupported step type '${step.type}'.`);
           break;
       }
+
       this.writeStepCriteria(writer, useCase, step);
+      writer.appendLine('end');
     });
   }
 
@@ -42,14 +49,14 @@ export class UseCaseDiagramGenerator implements UseCaseGenerator<UseCase> {
     useCase: UseCase,
     step: Step
   ) {
-    // TODO
+    step.criteria?.forEach((criterium) => {
+      writer.appendLine(
+        `${step.to.id}${'-->>'}${step.to.id}: ${criterium.should}`
+      );
+    });
   }
 
-  protected writeMessageStep(
-    writer: StringWriter,
-    useCase: UseCase,
-    step: MessageStep
-  ) {
+  protected writeStep(writer: StringWriter, useCase: UseCase, step: Step) {
     writer.appendLine(`${step.from.id}${step.arrow}${step.to.id}: ${step.id}`);
     if (step.note) {
       writer.appendLine(

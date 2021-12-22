@@ -30,6 +30,8 @@ export type ParticipantType = 'participant' | 'actor';
 export interface Step {
   id: string;
   type: StepType;
+  from: Participant;
+  to: Participant;
   arrow: StepArrowType;
   note?: string;
   skipTest?: boolean;
@@ -37,12 +39,10 @@ export interface Step {
 }
 
 export type StepType = 'message';
-export type StepArrowType = '->>' | '-->>';
+export type StepArrowType = '->>' | '-->>' | '->' | '-->';
 
 export interface MessageStep<T = any> extends Step {
   type: 'message';
-  from: Participant;
-  to: Participant;
   message?: T;
 }
 

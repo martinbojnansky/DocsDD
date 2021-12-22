@@ -97,6 +97,28 @@ const todoHappyUseCase: UseCase = {
       message: {
         title: 'Walk the dog!',
       },
+      criteria: [
+        <CypressCriterium>{
+          type: 'cypress',
+          should: 'first-not-checked',
+          code: () =>
+            cy
+              .get('[data-tid="todos-view__item"]')
+              .eq(0)
+              .get('[data-tid="todos-view__item__toggle"]')
+              .should('not.be.checked'),
+        },
+        <CypressCriterium>{
+          type: 'cypress',
+          should: 'first-contain-title',
+          code: () =>
+            cy
+              .get('[data-tid="todos-view__item"]')
+              .eq(0)
+              .get('[data-tid="todos-view__item__label"]')
+              .should('contain.text', 'Walk the dog!'),
+        },
+      ],
     },
 
     <MessageStep>{
@@ -105,6 +127,18 @@ const todoHappyUseCase: UseCase = {
       from: participants.user,
       to: participants.frontend,
       arrow: '->>',
+      criteria: [
+        <CypressCriterium>{
+          type: 'cypress',
+          should: 'first-not-checked',
+          code: () =>
+            cy
+              .get('[data-tid="todos-view__item"]')
+              .eq(0)
+              .get('[data-tid="todos-view__item__toggle"]')
+              .click(),
+        },
+      ],
     },
 
     <MessageStep>{
@@ -114,6 +148,18 @@ const todoHappyUseCase: UseCase = {
       to: participants.user,
       arrow: '-->>',
       note: 'Done',
+      criteria: [
+        <CypressCriterium>{
+          type: 'cypress',
+          should: 'first-not-checked',
+          code: () =>
+            cy
+              .get('[data-tid="todos-view__item"]')
+              .eq(0)
+              .get('[data-tid="todos-view__item__toggle"]')
+              .should('be.checked'),
+        },
+      ],
     },
   ],
 };
